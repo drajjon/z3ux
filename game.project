@@ -1,12 +1,13 @@
 [bootstrap]
 main_collection = /boot/boot.collectionc
+render = /lowrez/render/lowrez.renderc
 
 [script]
 shared_state = 1
 
 [display]
-width = 960
-height = 640
+width = 640
+height = 360
 high_dpi = 1
 
 [android]
@@ -21,6 +22,7 @@ scale_mode = stretch
 
 [project]
 title = z3ux
+dependencies#0 = https://github.com/britzl/template-lowres/archive/master.zip
 
 [input]
 game_binding = /boot/game.input_bindingc
