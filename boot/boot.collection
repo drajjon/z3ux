@@ -1,7 +1,7 @@
 name: "main"
 instances {
   id: "custom"
-  prototype: "/lowrez/custom.go"
+  prototype: "/gpu/custom.go"
   component_properties {
     id: "custom"
     properties {
