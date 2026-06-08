@@ -4,6 +4,7 @@ DOCUMENTATION: See project Wiki: https://github.com/drajjon/z3ux/wiki
 
 # TODO/WIP
 - pull in 8x8 PETSCII set, PoC rendering of character tiles
+    - from https://heptapod.host/jp-lebreton/playscii/-/blob/branch/default/charsets/c64_edscii.png?ref_type=heads
 - WIP: integrate https://github.com/britzl/template-lowres
     - Get window size to snap to screen size (or tile boundaries?)
     - Handle window resizing (disallow? change screen size?)
