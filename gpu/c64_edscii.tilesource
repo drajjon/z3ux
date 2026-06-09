@@ -1,4 +1,9 @@
 image: "/gpu/c64_edscii.png"
 tile_width: 8
 tile_height: 8
+animations {
+  id: "1"
+  start_tile: 17
+  end_tile: 26
+}
 extrude_borders: 2

@@ -27,3 +27,7 @@ dependencies#0 = https://github.com/britzl/template-lowres/archive/master.zip
 [input]
 game_binding = /boot/game.input_bindingc
 
+[sprite]
+subpixels = 0
+max_count = 32768
+
