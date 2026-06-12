@@ -1,6 +1,6 @@
 local Screen = {
 	WIDTH = 320,
-	HEIGHT = 180,
+	HEIGHT = 240,
 	TILE_WIDTH = 8,
 	TILE_HEIGHT = 8,
 }
@@ -37,6 +37,8 @@ end
 function update(self, dt)
 	for _, cell_url in pairs(layer) do
 		go.set(cell_url, "cursor", math.random()) -- tile 1 thru 155 currently
+		go.set(cell_url, "col0", vmath.vector4(math.random(), math.random(), math.random(), 1.0))
+		go.set(cell_url, "col1", vmath.vector4(math.random(), math.random(), math.random(), 1.0))
 	end
 end
 
