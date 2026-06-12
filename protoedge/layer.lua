@@ -1,12 +1,58 @@
 local Screen = require('protoedge.screen')
 
+local Tilette = {}
+Tilette.MIN = 1
+Tilette.MAX = 155
+
+local Palette = {
+    -- ALGORITHMIC PALETTE (one of several built-in palettes)
+    -- Black thru White
+    vmath.vector4(0.0, 0.0, 0.0, 1.0),
+    vmath.vector4(0.25, 0.25, 0.25, 1.0),
+    vmath.vector4(0.5, 0.5, 0.5, 1.0),
+    vmath.vector4(0.75, 0.75, 0.75, 1.0),
+    vmath.vector4(1.0, 1.0, 1.0, 1.0),
+    -- Red: 1/3rd, 2/3rd, full, full+50%
+    vmath.vector4(0.33, 0.0, 0.0, 1.0),
+    vmath.vector4(0.66, 0.0, 0.0, 1.0),
+    vmath.vector4(1.0, 0.0, 0.0, 1.0),
+    vmath.vector4(1.0, 0.5, 0.5, 1.0),
+    -- Yellow
+    vmath.vector4(0.33, 0.33, 0.0, 1.0),
+    vmath.vector4(0.66, 0.66, 0.0, 1.0),
+    vmath.vector4(1.0, 1.0, 0.0, 1.0),
+    vmath.vector4(1.0, 1.0, 0.5, 1.0),
+    -- Green
+    vmath.vector4(0.0, 0.33, 0.0, 1.0),
+    vmath.vector4(0.0, 0.66, 0.0, 1.0),
+    vmath.vector4(0.0, 1.0, 0.0, 1.0),
+    vmath.vector4(0.5, 1.0, 0.5, 1.0),
+    -- Cyan
+    vmath.vector4(0.0, 0.33, 0.33, 1.0),
+    vmath.vector4(0.0, 0.66, 0.66, 1.0),
+    vmath.vector4(0.0, 1.0, 1.0, 1.0),
+    vmath.vector4(0.5, 1.0, 1.0, 1.0),
+    -- Blue
+    vmath.vector4(0.0, 0.0, 0.33, 1.0),
+    vmath.vector4(0.0, 0.0, 0.66, 1.0),
+    vmath.vector4(0.0, 0.0, 1.0, 1.0),
+    vmath.vector4(0.5, 0.5, 1.0, 1.0),
+    -- Magenta
+    vmath.vector4(0.33, 0.0, 0.33, 1.0),
+    vmath.vector4(0.66, 0.0, 0.66, 1.0),
+    vmath.vector4(1.0, 0.0, 1.0, 1.0),
+    vmath.vector4(1.0, 0.5, 1.0, 1.0),
+    -- (2 spare slots)
+}
+Palette.Transparent = vmath.vector4(0, 0, 0, 0)
+
 ---@alias tile integer 0 is "nothing", 1+ for accessing tileset
 ---@alias color integer 0 is "transparent", 1+ for accessing palette
 
 ---@class Layer
 ---@field w integer Width in tiles
 ---@field h integer Height in tiles
--- TODO: not sure about 0,0/lower-left here
+-- TODO: change to tile-based position e.g. 1,1 floats upper-left corner
 ---@field x integer On-screen X position in pixels, 0 is left edge of screen
 ---@field y integer On-screen Y position in pixels, 0 is bottom edge of screen
 ---@field _tile tile[]
@@ -74,6 +120,9 @@ end
 function Layer:update()
     local factory_url = msg.url('/stuff#tilefactory')
     local spr = self._spr
+    local tile = self._tile
+    local fg = self._fg
+    local bg = self._bg
     local max_i = self:_cell(self.w, self.h)
 
     for i = 1, max_i do
@@ -89,10 +138,11 @@ function Layer:update()
             spr[i] = spr_url
         end
 
-        -- TODO: use real data obviously
-        go.set(spr_url, "cursor", math.random()) -- tile 1 thru 155 currently
-        go.set(spr_url, "col0", vmath.vector4(math.random(), math.random(), math.random(), 1.0))
-        go.set(spr_url, "col1", vmath.vector4(math.random(), math.random(), math.random(), 1.0))
+        local i_tile = tile[i]
+        local cursor = (i_tile - Tilette.MIN) / (Tilette.MAX - Tilette.MIN)
+        go.set(spr_url, "cursor", cursor)
+        go.set(spr_url, "col0", Palette[bg[i]] or Palette.Transparent)
+        go.set(spr_url, "col1", Palette[fg[i]] or Palette.Transparent)
     end
 end
 

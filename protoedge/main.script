@@ -11,7 +11,7 @@ end
 function update(self, dt)
 	for x = 1, Screen.COLS do
 		for y = 1, Screen.ROWS do
-			layer:poke(x, y, math.random(1, 100), 1, 2)
+			layer:poke(x, y, math.random(1, 155), math.random(1, 31), math.random(1, 31))
 		end
 	end
 	layer:update()

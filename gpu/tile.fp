@@ -15,7 +15,6 @@ void main()
         out_fragColor = var_col0; // TODO as needed: pull tex_col.w alpha in
     }
     else {
-    out_fragColor = var_col1;
-        // out_fragColor = mix(var_col1, tex_col, 0.5);
+        out_fragColor = var_col1;
     }
 }
