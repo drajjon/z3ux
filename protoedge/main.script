@@ -1,3 +1,6 @@
+local debugger = require('boot.debugger')
+debugger.start()
+
 local Screen = require('protoedge.screen')
 local new_Layer = require('protoedge.layer')
 

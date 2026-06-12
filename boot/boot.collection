@@ -16,5 +16,11 @@ embedded_instances {
   "  data: \"prototype: \\\"/gpu/tile.go\\\"\\n"
   "\"\n"
   "}\n"
+  "embedded_components {\n"
+  "  id: \"basefactory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/gpu/base.go\\\"\\n"
+  "\"\n"
+  "}\n"
   ""
 }

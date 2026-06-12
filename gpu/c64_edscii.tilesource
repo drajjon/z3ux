@@ -6,4 +6,3 @@ animations {
   start_tile: 2
   end_tile: 156
 }
-extrude_borders: 2

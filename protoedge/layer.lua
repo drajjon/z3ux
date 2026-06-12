@@ -1,5 +1,9 @@
 local Screen = require('protoedge.screen')
 
+--
+-- (this section is stuff likely to extract elsewhere over time)
+--
+
 local Tilette = {}
 Tilette.MIN = 1
 Tilette.MAX = 155
@@ -46,19 +50,27 @@ local Palette = {
 }
 Palette.Transparent = vmath.vector4(0, 0, 0, 0)
 
+local TILE_FACTORY = msg.url('main', '/stuff', 'tilefactory')
+local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
+
 ---@alias tile integer 0 is "nothing", 1+ for accessing tileset
 ---@alias color integer 0 is "transparent", 1+ for accessing palette
+---@alias goid hash
+
+--
+-- (end section)
+--
 
 ---@class Layer
 ---@field w integer Width in tiles
 ---@field h integer Height in tiles
--- TODO: change to tile-based position e.g. 1,1 floats upper-left corner
----@field x integer On-screen X position in pixels, 0 is left edge of screen
----@field y integer On-screen Y position in pixels, 0 is bottom edge of screen
+---@field x number On-screen X position in tiles, 1 is left edge of screen (decimals allowed)
+---@field y number On-screen Y position in tiles, 1 is top edge of screen (decimals allowed)
 ---@field _tile tile[]
 ---@field _fg color[]
 ---@field _bg color[]
 ---@field _spr url[]
+---@field _base_go goid?
 local Layer = {}
 local meta_Layer = { __index = Layer }
 
@@ -67,8 +79,8 @@ local function new_Layer()
     local layer = setmetatable({}, meta_Layer) ---@class Layer
     layer.w = Screen.COLS
     layer.h = Screen.ROWS
-    layer.x = 0
-    layer.y = 0
+    layer.x = 1
+    layer.y = 1
     layer._tile = {}
     layer._fg = {}
     layer._bg = {}
@@ -95,10 +107,10 @@ function Layer:_cell_to_coord(cell_index)
 end
 
 ---@param cell_index integer The result from `Layer:_cell(...)` or a similarly-calculated value
----@return number x,number y Screen position for sprite representing this cell
-function Layer:_cell_to_screen(cell_index)
+---@return vector3 pos Position (on base GO) for Defold sprite representing this cell
+function Layer:_cell_to_pos(cell_index)
     local x, y = self:_cell_to_coord(cell_index)
-    return (x - 1) * Screen.TILE_WIDTH, (Screen.ROWS - y) * Screen.TILE_HEIGHT
+    return Screen.tile_to_pos(x, y) -- Z value should always be 0, layering is done via base
 end
 
 ---@param x integer X position of cell, 1 for left-most column
@@ -116,9 +128,31 @@ function Layer:poke(x, y, tile, fg, bg)
     if bg then self._bg[i] = bg end
 end
 
+function Layer:_get_base_pos()
+    -- TODO: Z value for layering
+    return Screen.tile_to_pos(self.x, self.y + self.h - 1)
+end
+
+---@return hash?
+function Layer:_get_and_reposition_base()
+    local pos = self:_get_base_pos()
+    local base_go = self._base_go
+    if base_go then
+        go.set_position(pos, base_go)
+    else
+        base_go = factory.create(BASE_FACTORY, pos)
+        if not base_go then
+            error('out of sprites')
+        end
+    end
+    return base_go
+end
+
 -- Call once a frame
 function Layer:update()
-    local factory_url = msg.url('/stuff#tilefactory')
+    local base = self:_get_and_reposition_base()
+    if not base then return end
+
     local spr = self._spr
     local tile = self._tile
     local fg = self._fg
@@ -128,13 +162,13 @@ function Layer:update()
     for i = 1, max_i do
         local spr_url = spr[i]
         if not spr_url then
-            local spr_x, spr_y = self:_cell_to_screen(i) -- TODO: vec3?
-            local go_id = factory.create(factory_url, vmath.vector3(spr_x, spr_y, 0.0))
-            if not go_id then
+            local goid = factory.create(TILE_FACTORY, self:_cell_to_pos(i))
+            if not goid then
                 error('out of sprites')
+                return
             end
-
-            spr_url = msg.url(nil, go_id, 'tile')
+            go.set_parent(goid, base)
+            spr_url = msg.url(nil, goid, 'tile')
             spr[i] = spr_url
         end
 
