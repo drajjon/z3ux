@@ -1,25 +1,16 @@
 name: "main"
 instances {
-  id: "custom"
-  prototype: "/gpu/custom.go"
-  component_properties {
-    id: "custom"
-    properties {
-      id: "width"
-      value: "640.0"
-      type: PROPERTY_TYPE_NUMBER
-    }
-    properties {
-      id: "height"
-      value: "360.0"
-      type: PROPERTY_TYPE_NUMBER
-    }
-  }
+  id: "vbuffer"
+  prototype: "/gpu/vbuffer.go"
 }
 scale_along_z: 0
 embedded_instances {
-  id: "go"
-  data: "embedded_components {\n"
+  id: "stuff"
+  data: "components {\n"
+  "  id: \"main\"\n"
+  "  component: \"/protoedge/main.script\"\n"
+  "}\n"
+  "embedded_components {\n"
   "  id: \"cornerLL\"\n"
   "  type: \"sprite\"\n"
   "  data: \"default_animation: \\\"1\\\"\\n"
@@ -55,6 +46,12 @@ embedded_instances {
   "    x: 636.0\n"
   "    y: 356.0\n"
   "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"tilefactory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/gpu/tile.go\\\"\\n"
+  "\"\n"
   "}\n"
   ""
 }

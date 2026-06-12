@@ -1,7 +1,3 @@
-components {
-  id: "custom"
-  component: "/lowrez/custom.script"
-}
 embedded_components {
   id: "model"
   type: "model"

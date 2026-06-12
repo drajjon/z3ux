@@ -31,3 +31,9 @@ game_binding = /boot/game.input_bindingc
 subpixels = 0
 max_count = 32768
 
+[factory]
+max_count = 32768
+
+[collection]
+max_instances = 32768
+

@@ -1,0 +1,80 @@
+local Screen = {
+	WIDTH = 320,
+	HEIGHT = 180,
+	TILE_WIDTH = 8,
+	TILE_HEIGHT = 8,
+}
+Screen.COLS = Screen.WIDTH / Screen.TILE_WIDTH
+Screen.ROWS = Screen.HEIGHT / Screen.TILE_HEIGHT
+Screen.LAST_COL = Screen.COLS - 1 -- 0-based
+Screen.LAST_ROW = Screen.ROWS - 1
+Screen.CELLS = Screen.COLS * Screen.ROWS
+
+local layer = {} ---@type url[]
+
+function init(self)
+	msg.post("@render:", "set_size", { width = Screen.WIDTH, height = Screen.HEIGHT })
+	msg.post("@render:", "set_scale_snap", { snap = true })
+
+	for y = 0, Screen.LAST_ROW do
+		for x = 0, Screen.LAST_COL do
+			local spr_x = x * Screen.TILE_WIDTH
+			local spr_y = y * Screen.TILE_HEIGHT
+			local factory_url = msg.url('/stuff#tilefactory')
+			local go_id = factory.create(factory_url, vmath.vector3(spr_x, spr_y, 0.0))
+			if not go_id then
+				error('out of sprites')
+			end
+
+			local sprite_url = msg.url(nil, go_id, 'tile')
+
+			local i = x + y * Screen.COLS + 1
+			layer[i] = sprite_url
+		end
+	end
+end
+
+function update(self, dt)
+	for _, cell_url in pairs(layer) do
+		go.set(cell_url, "cursor", math.random()) -- tile 1 thru 155 currently
+	end
+end
+
+function late_update(self, dt)
+	-- This function is called at the end of update cycle but before render
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function fixed_update(self, dt)
+	-- This function is called if 'Fixed Update Frequency' is enabled in the Engine section of game.project
+	-- Can be coupled with fixed updates of the physics simulation if 'Use Fixed Timestep' is enabled in
+	-- Physics section of game.project
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Learn more: https://defold.com/manuals/message-passing/
+	-- Remove this function if not needed
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here. The game object this script is attached to
+	-- must have acquired input focus:
+	--
+	--    msg.post(".", "acquire_input_focus")
+	--
+	-- All mapped input bindings will be received. Mouse and touch input will
+	-- be received regardless of where on the screen it happened.
+	-- Learn more: https://defold.com/manuals/input/
+	-- Remove this function if not needed
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Learn more: https://defold.com/manuals/hot-reload/
+	-- Remove this function if not needed
+end
