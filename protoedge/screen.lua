@@ -10,7 +10,6 @@ Screen.LAST_COL = Screen.COLS - 1 -- 0-based
 Screen.LAST_ROW = Screen.ROWS - 1
 Screen.CELLS = Screen.COLS * Screen.ROWS
 
-
 ---@param x number On-screen X position in tiles, 1 is left edge of screen (decimals allowed)
 ---@param y number On-screen Y position in tiles, 1 is top edge of screen (decimals allowed)
 ---@param z number? Optional Z coordinate, defaults to 0

@@ -61,11 +61,18 @@ local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
 -- (end section)
 --
 
+---@class LayerProto
+---@field width integer Width in tiles
+---@field height integer Height in tiles
+---@field x_col number On-screen X position in tiles, 1 is left edge of screen (decimals allowed)
+---@field y_row number On-screen Y position in tiles, 1 is top edge of screen (decimals allowed)
+
 ---@class Layer
----@field w integer Width in tiles
----@field h integer Height in tiles
----@field x number On-screen X position in tiles, 1 is left edge of screen (decimals allowed)
----@field y number On-screen Y position in tiles, 1 is top edge of screen (decimals allowed)
+---@field width integer Width in tiles [READONLY]
+---@field height integer Height in tiles [READONLY]
+---@field x_col number On-screen X position in tiles, 1 is left edge of screen (decimals allowed)
+---@field y_row number On-screen Y position in tiles, 1 is top edge of screen (decimals allowed)
+---@field _sort float Ranged -1.0 thru 1.0, back-to-front [managed by LayerBoss]
 ---@field _tile tile[]
 ---@field _fg color[]
 ---@field _bg color[]
@@ -73,19 +80,23 @@ local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
 ---@field _base_go goid?
 local Layer = {}
 local meta_Layer = { __index = Layer }
+local sort_order = -1 -- CURRENTLY -1 thru 1
 
+---@param opts LayerProto?
 ---@return Layer
-local function new_Layer()
-    local layer = setmetatable({}, meta_Layer) ---@class Layer
-    layer.w = Screen.COLS
-    layer.h = Screen.ROWS
-    layer.x = 1
-    layer.y = 1
-    layer._tile = {}
-    layer._fg = {}
-    layer._bg = {}
-    layer._spr = {}
-    return layer
+local function new_Layer(opts)
+    local self = setmetatable(opts or {}, meta_Layer) ---@class Layer
+    self.width = self.width or Screen.COLS
+    self.height = self.height or Screen.ROWS
+    self.x_col = self.x_col or 1
+    self.y_row = self.y_row or 1
+    self._sort = sort_order
+    sort_order = sort_order + 1
+    self._tile = {}
+    self._fg = {}
+    self._bg = {}
+    self._spr = {}
+    return self
 end
 
 ---@param x integer X position of cell, 1 for left-most column
@@ -93,23 +104,23 @@ end
 ---@return integer cell_index Index into e.g. `self._tile` for given cell
 function Layer:_cell(x, y)
     -- FUTURE: bounds checking?
-    return self.w * (y - 1) + x
+    return self.width * (y - 1) + x
 end
 
 -- Reverses `Layer:_cell(...)`
 ---@param cell_index integer
 ---@return number x,number y
-function Layer:_cell_to_coord(cell_index)
+function Layer:_cell_to_xy(cell_index)
     cell_index = cell_index - 1
-    local x = cell_index % self.w + 1
-    local y = math.floor(cell_index / self.w) + 1
+    local x = cell_index % self.width + 1
+    local y = math.floor(cell_index / self.width) + 1
     return x, y
 end
 
 ---@param cell_index integer The result from `Layer:_cell(...)` or a similarly-calculated value
 ---@return vector3 pos Position (on base GO) for Defold sprite representing this cell
 function Layer:_cell_to_pos(cell_index)
-    local x, y = self:_cell_to_coord(cell_index)
+    local x, y = self:_cell_to_xy(cell_index)
     return Screen.tile_to_pos(x, y) -- Z value should always be 0, layering is done via base
 end
 
@@ -129,8 +140,7 @@ function Layer:poke(x, y, tile, fg, bg)
 end
 
 function Layer:_get_base_pos()
-    -- TODO: Z value for layering
-    return Screen.tile_to_pos(self.x, self.y + self.h - 1)
+    return Screen.tile_to_pos(self.x_col, self.y_row + self.height - 1, self._sort)
 end
 
 ---@return hash?
@@ -157,7 +167,7 @@ function Layer:update()
     local tile = self._tile
     local fg = self._fg
     local bg = self._bg
-    local max_i = self:_cell(self.w, self.h)
+    local max_i = self:_cell(self.width, self.height)
 
     for i = 1, max_i do
         local spr_url = spr[i]
@@ -173,8 +183,10 @@ function Layer:update()
         end
 
         local i_tile = tile[i]
-        local cursor = (i_tile - Tilette.MIN) / (Tilette.MAX - Tilette.MIN)
-        go.set(spr_url, "cursor", cursor)
+        if i_tile and i_tile > 0 then
+            local cursor = (i_tile - Tilette.MIN) / (Tilette.MAX - Tilette.MIN)
+            go.set(spr_url, "cursor", cursor)
+        end
         go.set(spr_url, "col0", Palette[bg[i]] or Palette.Transparent)
         go.set(spr_url, "col1", Palette[fg[i]] or Palette.Transparent)
     end

@@ -7,6 +7,14 @@
 			"end",
 		]
 	},
+	"Module method": {
+		"prefix": "fm",
+		"body": [
+			"function ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}.$1($2)",
+			"\t$0",
+			"end",
+		]
+	},
 	// Place your z3ux workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
 	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
 	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
