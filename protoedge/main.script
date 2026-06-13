@@ -29,9 +29,9 @@ local test_yarn = YarnBoss.new_yarn {
 		end
 	end
 }
+-- END TEST CODE :)
 
 function fixed_update(self) -- 60 FPS
-	-- NOT TEST CODE :)
 	YarnBoss.tick()
 	LayerBoss.update()
 end
