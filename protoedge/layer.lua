@@ -121,7 +121,9 @@ end
 ---@return vector3 pos Position (on base GO) for Defold sprite representing this cell
 function Layer:_cell_to_pos(cell_index)
     local x, y = self:_cell_to_xy(cell_index)
-    return Screen.tile_to_pos(x, y) -- Z value should always be 0, layering is done via base
+    x = (x - 1) * Screen.TILE_WIDTH
+    y = (self.height - y) * Screen.TILE_HEIGHT
+    return vmath.vector3(x, y, 0) -- Z value should always be 0, layering is done via base
 end
 
 ---@param x integer X position of cell, 1 for left-most column
