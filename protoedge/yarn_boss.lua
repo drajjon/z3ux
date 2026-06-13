@@ -14,7 +14,7 @@ end
 
 function YarnBoss.tick()
     for _, yarn in ipairs(_yarns) do
-        yarn:tick()
+        yarn:run_tick()
     end
 end
 

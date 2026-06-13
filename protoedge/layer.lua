@@ -159,6 +159,7 @@ function Layer:_get_and_reposition_base()
         if not base_go then
             error('out of sprites')
         end
+        self._base_go = base_go
     end
     return base_go
 end
