@@ -22,7 +22,7 @@ scale = 0.01
 scale_mode = stretch
 
 [project]
-title = z3ux
+title = Z3UX
 dependencies#0 = https://github.com/britzl/template-lowres/archive/master.zip
 
 [input]
