@@ -26,7 +26,7 @@ function LayerBoss.update()
         end
     end
     for _, layer in ipairs(_layers) do
-        layer:update()
+        layer:_do_update()
     end
 end
 

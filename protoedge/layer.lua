@@ -62,10 +62,10 @@ local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
 --
 
 ---@class LayerProto
----@field width integer Width in tiles
----@field height integer Height in tiles
----@field x_col number On-screen X position in tiles, 1 is left edge of screen (decimals allowed)
----@field y_row number On-screen Y position in tiles, 1 is top edge of screen (decimals allowed)
+---@field width integer? Width in tiles, defaults to width of screen
+---@field height integer? Height in tiles, defaults to height of screen
+---@field x_col number? On-screen X position in tiles, defaults to 1 - left edge of screen (decimals allowed)
+---@field y_row number? On-screen Y position in tiles, defaults to 1 - top edge of screen (decimals allowed)
 
 ---@class Layer
 ---@field width integer Width in tiles [READONLY]
@@ -164,7 +164,7 @@ function Layer:_get_and_reposition_base()
 end
 
 -- Call once a frame
-function Layer:update()
+function Layer:_do_update()
     local base = self:_get_and_reposition_base()
     if not base then return end
 

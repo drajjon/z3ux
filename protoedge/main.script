@@ -1,28 +1,37 @@
+local Screen = require('protoedge.screen')
 local debugger = require('boot.debugger')
 debugger.start()
-
-local Screen = require('protoedge.screen')
-local LayerBoss = require('protoedge.layer_boss')
-
-local layer = LayerBoss.new_layer()
-local layer2 = LayerBoss.new_layer { width = 3, height = 3, x_col = 1.5, y_row = 1.5 }
-
-for x = 1, 3 do
-	for y = 1, 3 do
-		layer2:poke(x, y, 136, 5, 1)
-	end
-end
 
 function init(self)
 	msg.post("@render:", "set_size", { width = Screen.WIDTH, height = Screen.HEIGHT })
 	msg.post("@render:", "set_scale_snap", { snap = true })
 end
 
-function fixed_update(self, dt)
-	for x = 1, Screen.COLS do
-		for y = 1, Screen.ROWS do
-			layer:poke(x, y, math.random(1, 155), math.random(1, 31), math.random(1, 31))
+-- TEST CODE
+local LayerBoss = require('protoedge.layer_boss')
+local YarnBoss = require('protoedge.yarn_boss')
+
+local bg_layer = LayerBoss.new_layer()
+local fg_layer = LayerBoss.new_layer { width = 3, height = 3, x_col = 1.5, y_row = 1.5 }
+
+for x = 1, 3 do
+	for y = 1, 3 do
+		fg_layer:poke(x, y, 136, 5, 1)
+	end
+end
+
+local test_yarn = YarnBoss.new_yarn {
+	tick = function()
+		for x = 1, Screen.COLS do
+			for y = 1, Screen.ROWS do
+				bg_layer:poke(x, y, math.random(1, 155), math.random(1, 31), math.random(1, 31))
+			end
 		end
 	end
+}
+
+function fixed_update(self) -- 60 FPS
+	-- NOT TEST CODE :)
+	YarnBoss.tick()
 	LayerBoss.update()
 end
