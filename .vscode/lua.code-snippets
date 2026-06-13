@@ -1,4 +1,8 @@
 {
+	"Module require": {
+		"prefix": "req",
+		"body": "local ${1:Class} = require('${2:.${1/(.*)/${1:/downcase}/}}')"
+	},
 	"Class method": {
 		"prefix": "fn",
 		"body": [
@@ -13,6 +17,41 @@
 			"function ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}.$1($2)",
 			"\t$0",
 			"end",
+		]
+	},
+	"Test file template": {
+		"scope": "lua",
+		"prefix": "testfile",
+		"include": [
+			"**/test/*.lua",
+			"*test*.lua"
+		],
+		"body": [
+			"-----------------------------------------------------------------------------------------",
+			"--",
+			"-- Tests: $1",
+			"--",
+			"-----------------------------------------------------------------------------------------",
+			//"---@diagnostic disable: no-unknown",
+			//"---@diagnostic disable: need-check-nil",
+			"",
+			"local ${1:${TM_FILENAME_BASE/(test_)?(.*)/${2:/pascalcase}/}} = require('${2:pkg.class}')",
+			//"local error = require('core.error')",
+			//"local assert = require('test.assert')",
+			"",
+			"return function()",
+			"    context('$1', function()",
+			"        before(function()",
+			"        end)",
+			"",
+			"        after(function()",
+			"        end)",
+			"",
+			"        test('basic $1 test', function()",
+			"            $0",
+			"        end)",
+			"    end) -- $1",
+			"end"
 		]
 	},
 	// Place your Z3UX workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 

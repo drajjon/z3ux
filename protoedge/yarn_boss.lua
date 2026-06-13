@@ -1,6 +1,6 @@
 local new_Yarn = require('protoedge.yarn')
 
----@class YarnBoss
+---@pkg YarnBoss
 local YarnBoss = {}
 local _yarns = {} ---@type Yarn[]
 

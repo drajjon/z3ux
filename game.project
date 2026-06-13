@@ -23,7 +23,8 @@ scale_mode = stretch
 
 [project]
 title = Z3UX
-dependencies#0 = https://github.com/britzl/template-lowres/archive/master.zip
+dependencies#0 = https://github.com/britzl/template-lowres/archive/refs/tags/1.5.1.zip
+dependencies#1 = https://github.com/drajjon/deftest/archive/master.zip
 
 [input]
 game_binding = /boot/game.input_bindingc

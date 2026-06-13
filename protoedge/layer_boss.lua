@@ -1,6 +1,6 @@
 local new_Layer = require('protoedge.layer')
 
----@class LayerBoss
+---@pkg LayerBoss
 local LayerBoss = {}
 local _layers = {} ---@type Layer[]
 local _order_dirty = false
