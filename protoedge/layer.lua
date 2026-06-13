@@ -72,6 +72,7 @@ local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
 ---@field height integer Height in tiles [READONLY]
 ---@field x_col number On-screen X position in tiles, 1 is left edge of screen (decimals allowed)
 ---@field y_row number On-screen Y position in tiles, 1 is top edge of screen (decimals allowed)
+---@field id integer Unique ID per Layer [READONLY]
 ---@field _sort float Ranged -1.0 thru 1.0, back-to-front [managed by LayerBoss]
 ---@field _tile tile[]
 ---@field _fg color[]
@@ -80,6 +81,7 @@ local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
 ---@field _base_go goid?
 local Layer = {}
 local meta_Layer = { __index = Layer }
+local id_order = 1
 local sort_order = -1 -- CURRENTLY -1 thru 1
 
 ---@param opts LayerProto?
@@ -90,8 +92,9 @@ local function new_Layer(opts)
     self.height = self.height or Screen.ROWS
     self.x_col = self.x_col or 1
     self.y_row = self.y_row or 1
-    self._sort = sort_order
-    sort_order = sort_order + 1
+    self.id = id_order
+    id_order = id_order + 1
+    self._sort = 0
     self._tile = {}
     self._fg = {}
     self._bg = {}
