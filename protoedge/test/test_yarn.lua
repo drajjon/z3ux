@@ -17,14 +17,14 @@ return function()
 
         test('Threading Test', function()
             local a, b = 0, 0
-            local yarn_a = YarnBoss.new_yarn { tick = function(self)
+            local yarn_a = YarnBoss.new_yarn { start = function(self)
                 a = a + 1
                 self:idle()
                 a = a + 1
                 self:idle()
                 a = a + 1
             end }
-            local yarn_b = YarnBoss.new_yarn { tick = function(self)
+            local yarn_b = YarnBoss.new_yarn { start = function(self)
                 b = b + 1
                 self:idle(2)
                 b = b + 1
@@ -40,7 +40,11 @@ return function()
             coroutine.yield()
             assert.equal(3, a)
             assert.equal(2, b)
-            -- TODO: KILL THE YARNS
+            coroutine.yield() -- Yarns should auto-terminate at end
+            coroutine.yield()
+            coroutine.yield()
+            assert.equal(3, a)
+            assert.equal(2, b)
         end)
     end) -- Yarn and YarnBoss
 end

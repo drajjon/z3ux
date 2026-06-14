@@ -13,7 +13,7 @@ local function the_game()
     box_layer:rect({ x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }, { tile = 256, fg = 5 }, true)
 
     local bg_yarn = YarnBoss.new_yarn {
-        tick = function(self)
+        start = function(self)
             local t = 0
             repeat
                 t = t + 1
@@ -53,7 +53,7 @@ local function the_game()
     end
 
     local fg_yarn = YarnBoss.new_yarn {
-        tick = function(self)
+        start = function(self)
             repeat
                 for i = 1, NUM_SPR do
                     local layer = fg_layer[i]

@@ -13,8 +13,18 @@ function YarnBoss.new_yarn(opts)
 end
 
 function YarnBoss.tick()
-    for _, yarn in ipairs(_yarns) do
-        yarn:run_tick()
+    local max_i = #_yarns
+    local drop_i = 1
+    for i = 1, max_i do
+        local yarn = _yarns[i]
+        local done = yarn:run_tick()
+        if not done then
+            _yarns[drop_i] = yarn
+            drop_i = drop_i + 1
+        end
+    end
+    for i = drop_i, max_i do
+        _yarns[i] = nil
     end
 end
 
