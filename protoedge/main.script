@@ -32,8 +32,11 @@ function fixed_update(self) -- 60 FPS
 	else
 		-- 5) Boot up game itself
 		if not game_phase then
-			the_game()
-			game_phase = true
+			local success, err = pcall(the_game)
+			game_phase = true -- don't repeat failed bootup
+			if not success then
+				error('-- TODO: error booting game')
+			end
 		end
 	end
 

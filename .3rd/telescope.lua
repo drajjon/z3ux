@@ -1,0 +1,98 @@
+---@meta
+--
+-- Definitions for the "methods" that `deftest/telescope.lua` adds to test files, for Lua language server
+-- (limited to the synonyms that Z3UX prefers)
+--
+
+---Used to define a set of tests. Can be nested to define sub-tests.
+---
+---## Example
+---```
+---context("Test Item Class", function()
+---    test("Creates an item", function()
+---        --...
+---    end)
+---    context("Test Tags", function()
+---        test("Creates a tag", function()
+---            --...
+---        end)
+---    end)
+---end)
+---```
+---@param name string
+---@param block fun()
+function context(name, block) end
+
+---Define a test that will pass, fail, or error.
+---
+---## Example
+---```
+---context("Test something", function()
+---    test("Runs a test", function()
+---        assert.is.True(10 == 10)
+---    end)
+---end)
+---```
+---@param name string
+---@param block fun()
+function test(name, block) end
+
+---Define a function to run before each child test, this includes tests nested
+---in a child context block.
+---
+---## Example
+---```
+---context("Test Array Class", function()
+---    local a
+---    local b
+---
+---    before(function()
+---        a = Array.new(1, 2, 3, 4)
+---        b = Array.new(11, 12, 13, 14)
+---    end)
+---
+---    test("Assures instance is an Array", function()
+---        assert.True(Array.isArray(a))
+---        assert.True(Array.isArray(b))
+---    end)
+---
+---    context("Nested tests", function()
+---        test("Also runs before_each", function()
+---            assert.are.same(
+---                { 1, 2, 3, 4, 11, 12, 13, 14 },
+---                a:concat(b))
+---        end)
+---    end)
+---end)
+---```
+---@param block fun()
+function before(block) end
+
+---Define a function to run after each child test, this includes tests nested
+---in a child context block.
+---
+---## Example
+---```
+---context("Test saving", function()
+---    local game
+---
+---    after(function()
+---        game.save.reset()
+---    end)
+---
+---    test("Creates game", function()
+---        game = game.new()
+---        game.save.save()
+---    end)
+---
+---    context("Saves metadata", function()
+---        test("Saves objects", function()
+---            game = game.new()
+---            game.save.save()
+---            assert.is_not.Nil(game.save.objects)
+---        end)
+---    end)
+---end)
+---```
+---@param block fun()
+function after(block) end

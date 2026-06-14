@@ -5,6 +5,7 @@
 -----------------------------------------------------------------------------------------
 
 local YarnBoss = require('protoedge.yarn_boss')
+local assert = require('test.assert')
 
 return function()
     context('Yarn and YarnBoss', function()
@@ -16,6 +17,7 @@ return function()
 
         test('test example', function()
             assert(true)
+            assert.empty({})
             coroutine.yield()
             assert(true)
         end)

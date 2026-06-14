@@ -37,7 +37,7 @@
 			"",
 			"local ${1:${TM_FILENAME_BASE/(test_)?(.*)/${2:/pascalcase}/}} = require('${2:pkg.class}')",
 			//"local error = require('core.error')",
-			//"local assert = require('test.assert')",
+			"local assert = require('test.assert')",
 			"",
 			"return function()",
 			"    context('$1', function()",
