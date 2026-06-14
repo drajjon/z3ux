@@ -62,6 +62,7 @@ local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
 --
 
 ---@class LayerProto
+-- TODO: back to xywh?
 ---@field width integer? Width in tiles, defaults to width of screen
 ---@field height integer? Height in tiles, defaults to height of screen
 ---@field x_col number? On-screen X position in tiles, defaults to 1 - left edge of screen (decimals allowed)
@@ -82,7 +83,10 @@ local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
 local Layer = {}
 local meta_Layer = { __index = Layer }
 local id_order = 1
-local sort_order = -1 -- CURRENTLY -1 thru 1
+
+-----------------------------------------------------------------------------------------
+-- Core implementation of display logic
+-----------------------------------------------------------------------------------------
 
 ---@param opts LayerProto?
 ---@return Layer
@@ -127,21 +131,6 @@ function Layer:_cell_to_pos(cell_index)
     x = (x - 1) * Screen.TILE_WIDTH
     y = (self.height - y) * Screen.TILE_HEIGHT
     return vmath.vector3(x, y, 0) -- Z value should always be 0, layering is done via base
-end
-
----@param x integer X position of cell, 1 for left-most column
----@param y integer Y position of cell, 1 for top-most row
----@param tile tile? Tile to place in cell (0 to clear cell, nil to leave existing tile alone)
----@param fg color? Foreground color for cell (0 for transparent, nil to leave existing fg alone)
----@param bg color? Background color for cell (0 for transparent, nil to leave existing bg alone)
-function Layer:poke(x, y, tile, fg, bg)
-    -- TODO: #if DEBUG?
-    assert(type(x) == 'number') -- etc.
-
-    local i = self:_cell(x, y)
-    if tile then self._tile[i] = tile end
-    if fg then self._fg[i] = fg end
-    if bg then self._bg[i] = bg end
 end
 
 function Layer:_get_base_pos()
@@ -192,10 +181,70 @@ function Layer:_do_update()
         if i_tile and i_tile > 0 then
             local cursor = (i_tile - Tilette.MIN) / (Tilette.MAX - Tilette.MIN)
             go.set(spr_url, "cursor", cursor)
+            go.set(spr_url, "col0", Palette[bg[i]] or Palette.Transparent)
+            go.set(spr_url, "col1", Palette[fg[i]] or Palette.Transparent)
+        else -- no tile, hide sprite
+            go.set(spr_url, "col0", Palette.Transparent)
+            go.set(spr_url, "col1", Palette.Transparent)
         end
-        go.set(spr_url, "col0", Palette[bg[i]] or Palette.Transparent)
-        go.set(spr_url, "col1", Palette[fg[i]] or Palette.Transparent)
     end
 end
 
+-----------------------------------------------------------------------------------------
+-- Basic accessor and mutation operations
+-----------------------------------------------------------------------------------------
+
+---@param x integer X position of cell, 1 for left-most column
+---@param y integer Y position of cell, 1 for top-most row
+---@param tile tile? Tile to place in cell (0 to clear cell, nil to leave existing tile alone)
+---@param fg color? Foreground color for cell (0 for transparent, nil to leave existing fg alone)
+---@param bg color? Background color for cell (0 for transparent, nil to leave existing bg alone)
+function Layer:poke(x, y, tile, fg, bg)
+    -- TODO: #if DEBUG?
+    assert(type(x) == 'number') -- etc.
+
+    local i = self:_cell(x, y)
+    if tile then self._tile[i] = tile end
+    if fg then self._fg[i] = fg end
+    if bg then self._bg[i] = bg end
+end
+
+---@param x integer X position of cell, 1 for left-most column
+---@param y integer Y position of cell, 1 for top-most row
+---@param cell Cell
+function Layer:cell(x, y, cell)
+    local i = self:_cell(x, y)
+    if cell.tile then self._tile[i] = cell.tile end
+    if cell.fg then self._fg[i] = cell.fg end
+    if cell.bg then self._bg[i] = cell.bg end
+end
+
+---@class Cell
+---@field tile tile? Tile to place in cell (0 to clear cell, nil to leave existing tile alone)
+---@field fg color? Foreground color for cell (0 for transparent, nil to leave existing fg alone)
+---@field bg color? Background color for cell (0 for transparent, nil to leave existing bg alone)
+
+---@class Rect
+---@field x integer X position of top-left corner (1,1 based)
+---@field y integer Y position of top-left corner (1,1 based)
+---@field w integer Width of rectangle
+---@field h integer Height of rectangle
+
+-- Draw a hollow or filled rectangle
+---@param rect Rect
+---@param cell Cell
+---@param is_hollow bool? True for hollow rectangle, false (default) for filled
+function Layer:rect(rect, cell, is_hollow)
+    local x2 = rect.x + rect.w - 1
+    local y2 = rect.y + rect.h - 1
+    for x = rect.x, x2 do
+        for y = rect.y, y2 do
+            if not is_hollow or x == x2 or x == rect.x or y == y2 or y == rect.y then
+                self:cell(x, y, cell)
+            end
+        end
+    end
+end
+
+-- TODO: how to handle "detached"/"scratch" layers?
 return new_Layer
