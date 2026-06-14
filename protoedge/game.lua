@@ -12,7 +12,7 @@ local function the_game()
 
     for x = 1, 3 do
         for y = 1, 3 do
-            fg_layer:poke(x, y, 136, 5, 1)
+            fg_layer:poke(x, y, 162, 5, 1)
         end
     end
 
@@ -24,7 +24,7 @@ local function the_game()
                 for x = 1, Screen.COLS do
                     for y = 1, Screen.ROWS do
                         local i = x + y + t
-                        bg_layer:poke(x, y, i % 155 + 1, i % 31 + 1, i % 30 + 1)
+                        bg_layer:poke(x, y, i % 256 + 1, i % 31 + 1, i % 30 + 1)
                     end
                 end
                 self:idle(15)

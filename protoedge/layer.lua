@@ -6,7 +6,7 @@ local Screen = require('protoedge.screen')
 
 local Tilette = {}
 Tilette.MIN = 1
-Tilette.MAX = 155
+Tilette.MAX = 256
 
 local Palette = {
     -- ALGORITHMIC PALETTE (one of several built-in palettes)

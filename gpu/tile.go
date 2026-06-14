@@ -25,7 +25,7 @@ embedded_components {
   "}\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/gpu/c64_edscii.tilesource\"\n"
+  "  texture: \"/gpu/jpetscii.tilesource\"\n"
   "}\n"
   ""
   position {

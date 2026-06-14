@@ -1,0 +1,8 @@
+image: "/gpu/jpetscii.png"
+tile_width: 8
+tile_height: 8
+animations {
+  id: "1"
+  start_tile: 1
+  end_tile: 256
+}
