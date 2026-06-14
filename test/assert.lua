@@ -143,10 +143,10 @@ function assert.same(expected, actual, ...) tasserts.assert_same(expected, actua
 ---@param ... any Additional values to compare to the others (all must be unique)
 function assert.unique(expected, actual, ...) tasserts.assert_unique(expected, actual, ...) end
 
--- Assert `expected == actual`.
+-- Assert `expected == actual`, using normal `==` equality operator.
 ---@param expected any
 ---@param actual any
----@param message string?
-function assert.equal(expected, actual, message) tasserts.assert_equal(expected, actual, message) end
+---@param ... any Additional values to compare to the others (all must be equal)
+function assert.equal(expected, actual, ...) tasserts.assert_equal(expected, actual, ...) end
 
 return assert
