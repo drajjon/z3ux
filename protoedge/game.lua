@@ -7,11 +7,8 @@ local LayerBoss = require('protoedge.layer_boss')
 local YarnBoss = require('protoedge.yarn_boss')
 
 local function the_game()
+    -- Scrolling background
     local bg_layer = LayerBoss.new_layer { width = Screen.COLS + 1 }
-    local box_layer = LayerBoss.new_layer()
-    box_layer:rect({ x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }, { tile = 255, fg = 2 })
-    box_layer:rect({ x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }, { tile = 256, fg = 5 }, true)
-
     local bg_yarn = YarnBoss.new_yarn {
         start = function(self)
             local t = 0
@@ -25,12 +22,13 @@ local function the_game()
                 end
                 for scroll = 8, 1, -1 do
                     bg_layer.x_col = scroll / 8
-                    self:idle(2)
+                    self:idle(10)
                 end
             until false
         end
     }
 
+    -- Bouncing balls
     local SPR_SIZE = 2
     local NUM_SPR = 8
     local x_max = Screen.COLS - SPR_SIZE + 1
@@ -44,7 +42,7 @@ local function the_game()
         x_d[i] = ((math.random(1, 2) - 1) * 2 - 1) * 0.25
         y_d[i] = ((math.random(1, 2) - 1) * 2 - 1) * 0.25
         fg_layer[i] = LayerBoss.new_layer { width = SPR_SIZE, height = SPR_SIZE, x_col = x, y_row = y }
-        local color = math.random(1, 30)
+        local color = math.random(5, 25)
         -- fg_layer[i]:rect({ x = 1, y = 1, w = SPR_SIZE, h = SPR_SIZE }, { tile = 162, fg = color })
         fg_layer[i]:poke(1, 1, 145, color)
         fg_layer[i]:poke(2, 1, 147, color)
@@ -70,6 +68,11 @@ local function the_game()
             until false
         end
     }
+
+    -- Box window
+    local box_layer = LayerBoss.new_layer()
+    box_layer:rect({ x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }, { tile = 254, bg = 2 })
+    box_layer:rect({ x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }, { tile = 256, fg = 12 }, true)
 end
 
 return the_game
