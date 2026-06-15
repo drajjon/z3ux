@@ -5,6 +5,7 @@ debugger.start()
 -- 2) Initialize the engine itself (only what is required for tests)
 local Screen = require('protoedge.screen')
 function init(self)
+	msg.post(".", "acquire_input_focus")
 	msg.post("@render:", "set_size", { width = Screen.WIDTH, height = Screen.HEIGHT })
 	msg.post("@render:", "set_scale_snap", { snap = true })
 end
@@ -43,4 +44,13 @@ function fixed_update(self) -- 60 FPS
 	-- 4+5) The core Z3UX engine loop
 	YarnBoss.tick()
 	LayerBoss.update()
+end
+
+-- Handle other Defold incoming APIs e.g. input
+local InputBoss = require('protoedge.input_boss')
+
+---@param action_id hash
+---@param action on_input.action
+function on_input(self, action_id, action)
+	InputBoss.on_input(action_id, action)
 end

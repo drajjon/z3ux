@@ -11,6 +11,7 @@ function TheTests.run_or_resume()
         local test_result ---@type any?
         if test_phase == 'start' then
             -- LOAD ALL TESTS HERE
+            deftest.add(require('protoedge.test.test_input'))
             deftest.add(require('protoedge.test.test_layer'))
             deftest.add(require('protoedge.test.test_yarn'))
             -- (end test loading)
