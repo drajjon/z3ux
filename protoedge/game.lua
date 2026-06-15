@@ -70,9 +70,58 @@ local function the_game()
     }
 
     -- Box window
+    local window = { x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }
     local box_layer = LayerBoss.new_layer()
-    box_layer:rect({ x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }, { tile = 254, bg = 2 })
-    box_layer:rect({ x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }, { tile = 256, fg = 12 }, true)
+    box_layer:rect(window, { tile = 254, bg = 2 })
+    box_layer:rect(window, { tile = 256, fg = 12 }, true)
+
+    -- Cursor layer
+    -- TODO: extract helper for Rect->Opts copying (note the param difference could help enforce patterns- x and x_col are not the same!)
+    local view_width = window.w - 2
+    local view_height = window.h - 2
+    local cursor_layer = LayerBoss.new_layer { x_col = window.x + 1, y_row = window.y + 1, width = view_width, height = view_height }
+    local cursor_x, cursor_y = 1, 1
+    ---@param cell Cell
+    local function draw_cursor(cell)
+        cursor_layer:cell(cursor_x, cursor_y, cell)
+    end
+    ---@type Cell
+    local EMPTY_CELL = { tile = 0, fg = 0, bg = 0 } -- TODO: Move somewhere useful
+    ---@type Cell[]
+    local CURSOR_CELLS = {
+        { tile = 100, fg = 4, bg = 0 },
+        { tile = 102, fg = 5, bg = 0 },
+        { tile = 134, fg = 4, bg = 0 },
+        { tile = 132, fg = 5, bg = 0 },
+    }
+    local cursor_frame = 1
+    ---@param self Yarn
+    local function run_cursor(self)
+        repeat
+            draw_cursor(CURSOR_CELLS[cursor_frame])
+            if cursor_frame < #CURSOR_CELLS then
+                cursor_frame = cursor_frame + 1
+            else
+                cursor_frame = 1
+            end
+            self:idle(15)
+        until false
+    end
+    local cursor_yarn = YarnBoss.new_yarn {
+        start = function(self)
+            run_cursor(self)
+        end,
+        in_move = function(self, params)
+            draw_cursor(EMPTY_CELL)
+            cursor_x = cursor_x + params.dx
+            while cursor_x < 1 do cursor_x = cursor_x + view_width end
+            while cursor_x > view_width do cursor_x = cursor_x - view_width end
+            cursor_y = cursor_y + params.dy
+            while cursor_y < 1 do cursor_y = cursor_y + view_height end
+            while cursor_y > view_height do cursor_y = cursor_y - view_height end
+            run_cursor(self)
+        end
+    }
 end
 
 return the_game

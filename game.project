@@ -28,6 +28,8 @@ dependencies#1 = https://github.com/drajjon/deftest/archive/master.zip
 
 [input]
 game_binding = /boot/game.input_bindingc
+repeat_delay = 0.2
+repeat_interval = 0.05
 
 [sprite]
 subpixels = 0
