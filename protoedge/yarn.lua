@@ -1,14 +1,19 @@
 ---@class YarnProto
 ---@field start fun(self:Yarn)? Automatic entrypoint for when Yarn starts
+---@field [string] fun(self:Yarn, params:EventParams) Other event handlers, parameters vary by event
 
 ---@class Yarn
 ---@field id integer Unique ID per Yarn [READONLY]
----@field _next string? Queue of 1 message - FUTURE: more messages
+---@field _next string? Queue of 1 event - FUTURE: more events?
+---@field _next_params EventParams? Params for 1 event
 ---@field _coro thread?
 ---@field _cycler number
 local Yarn = {}
 local meta_Yarn = { __index = Yarn }
 local id_order = 1
+
+---@alias EventParams table<string,any>
+local EMPTY_PARAMS = {}
 
 ---@param opts YarnProto?
 ---@return Yarn
@@ -21,44 +26,49 @@ local function new_Yarn(opts)
     return self
 end
 
--- You can override this in your new Yarn to make a simple fixed_update Yarn that does not use coroutines.
+-- You can override this in your new Yarn to make a simple fixed_update Yarn that does not use coroutines or events.
 -- You may call it manually to speed ahead if you like.
 ---@return bool? done Returns true if Yarn is completely idle
 function Yarn:run_tick()
-    -- Delays
+    local coro = self._coro
     local cycler = self._cycler
+    local params ---@type EventParams?
+
+    -- Process event?
+    local event = self._next
+    if event then
+        self._next = nil
+        local fn = self[event] ---@type fun()?
+        if type(fn) == 'function' then
+            coro = coroutine.create(fn)
+            self._coro = coro
+            cycler = 0 -- Events happen immediately
+            params = self._next_params or EMPTY_PARAMS
+        end
+        self._next_params = nil
+    end
+
+    -- Delays
     if cycler > 0 then
         self._cycler = cycler - 1
         return
     end
 
-    -- Resume existing coroutine?
-    local coro = self._coro
+    -- Start or resume coroutine
     if coro then
-        coroutine.resume(coro, self)
+        coroutine.resume(coro, self, params)
         local status = coroutine.status(coro)
         if status == 'dead' then
-            self._coro = nil -- Need a new coroutine
+            -- FUTURE: could [optionally] loop back for another event (e.g. to support zero-delay "goto")
+            -- (this could be flagged based on a yield return value, or just standard behavior)
+            self._coro = nil
+            -- UNNEEDED CURRENTLY: coro = nil
         end
         return
     end
 
-    -- Process next message and spin up new coroutine
-    local msg = self._next
-    local fn = self[msg] ---@type fun()?
-    self._next = nil
-    if type(fn) ~= 'function' then
-        -- End of message queue
-        return true
-    end
-    coro = coroutine.create(fn)
-    self._coro = coro -- (Yarn needs to know it's own coroutine while running)
-    -- This code looks the same but we expect message processing to add parameters later
-    coroutine.resume(coro, self)
-    local status = coroutine.status(coro)
-    if status == 'dead' then
-        self._coro = nil
-    end
+    -- No events, idles, or ticks left to process
+    return true
 end
 
 ---@param ticks number?
@@ -76,8 +86,18 @@ function Yarn:idle(ticks)
 end
 
 -- Safety default implementation, does nothing
+-- TODO: this should be optional
 ---@async
 function Yarn:start()
+end
+
+---@param event string
+---@param params EventParams?
+function Yarn:send(event, params)
+    if type(self[event]) == 'function' then
+        self._next = event
+        self._next_params = params
+    end
 end
 
 return new_Yarn

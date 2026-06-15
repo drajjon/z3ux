@@ -13,9 +13,11 @@ return function()
         end)
 
         after(function()
+            -- TODO: test for yarns clearing out of pool
+            -- TODO: clear test-yarns after every test / suite
         end)
 
-        test('Threading Test', function()
+        test('basic threading', function()
             local a, b = 0, 0
             local yarn_a = YarnBoss.new_yarn { start = function(self)
                 a = a + 1
@@ -45,6 +47,54 @@ return function()
             coroutine.yield()
             assert.equal(3, a)
             assert.equal(2, b)
+        end)
+
+        test('basic messaging', function()
+            local a, b = 0, 0
+            local hello ---@type string?
+            local yarn_a = YarnBoss.new_yarn {
+                start = function(self)
+                    repeat
+                        a = a + 1
+                        self:idle()
+                    until false
+                end,
+                hello = function(self, params)
+                    hello = params.abc
+                end
+            }
+            local yarn_b = YarnBoss.new_yarn {
+                start = function(self)
+                    repeat
+                        b = b + 1
+                        self:idle()
+                    until false
+                end
+            }
+            -- Verify pre-event state
+            coroutine.yield()
+            coroutine.yield()
+            assert.equal(2, a)
+            assert.equal(2, b)
+            -- Event sends, yarn b continues
+            YarnBoss.send('hello', { abc = 'xyz' })
+            assert.is_nil(hello)
+            coroutine.yield()
+            assert.equal(2, a)
+            assert.equal(3, b)
+            assert.equal('xyz', hello)
+            -- Yarn a does nothing, yarn b continues
+            hello = 'shh'
+            coroutine.yield()
+            assert.equal(2, a)
+            assert.equal(4, b)
+            assert.equal('shh', hello)
+            -- Event works again after a delay
+            coroutine.yield()
+            YarnBoss.send('hello', { abc = 'xyz' })
+            coroutine.yield()
+            assert.equal(2, a)
+            assert.equal('xyz', hello)
         end)
     end) -- Yarn and YarnBoss
 end

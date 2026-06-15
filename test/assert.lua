@@ -76,7 +76,9 @@ function assert.match(pattern, value) tasserts.assert_match(pattern, value) end
 -- Assert is `nil` specifically.
 ---@param value any
 ---@param message string?
-function assert.is_nil(value, message) tasserts.assert_is_nil(value, message) end
+function assert.is_nil(value, message) -- intentional clarification of name
+    tasserts.assert_nil(value, message)
+end
 
 -- Assert is `true` specifically.
 ---@param value any

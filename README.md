@@ -4,6 +4,15 @@ See project Wiki: https://github.com/drajjon/z3ux/wiki
 
 Z3UX is published under a ["CC BY-NC 4.0"](https://creativecommons.org/licenses/by-nc/4.0/) license by Alexis Janson (aka "drajjon") - see [LICENSE.md](LICENSE.md) for details.
 
+## CURRENT TODO [probably out of date!]
+possible yarn event behaviors [depending on need]
+- locked
+- auto-locking (don't interrupt)
+- queueing / stacking / dropping
+
+Should new_Yarn own adding itself to YarnBoss?
+do we want to track "idle" threads in a separate pool? (feels FUTURE to me)
+
 ## FUTURE TODO
 - top-level log handler?
 - top-level Lua error(...) handler
