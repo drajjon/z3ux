@@ -17,12 +17,13 @@ local function the_game()
                 for x = 1, bg_layer.width do
                     for y = 1, bg_layer.height do
                         local i = x + y + t
-                        bg_layer:poke(x, y, i % 256 + 1, i % 31 + 1, i % 30 + 1)
+                        -- local char = i % 256 + 1
+                        bg_layer:poke(x, y, 149, (i + 1) % 29 + 1, i % 29 + 1)
                     end
                 end
                 for scroll = 8, 1, -1 do
                     bg_layer.x_col = scroll / 8
-                    self:idle(10)
+                    self:idle(4)
                 end
             until false
         end
