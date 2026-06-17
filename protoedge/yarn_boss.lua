@@ -12,6 +12,11 @@ function YarnBoss.new_yarn(opts)
     return yarn
 end
 
+---@return integer
+function YarnBoss.get_active_yarns()
+    return #_yarns
+end
+
 -- TEMPORARY: We want a way for "done" yarns to clean out, but we haven't decided on the ideal method for that yet.
 local DROP_YARNS = false
 

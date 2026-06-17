@@ -26,8 +26,9 @@ function fixed_update(self) -- 60 FPS
 		local is_done = TheTests.run_or_resume()
 		if is_done then
 			test_phase = false
-			if TheTests.test_failures then
-				error('-- TODO: display failure in popup window')
+			if TheTests.test_status ~= 'success' then
+				-- TODO: display test details in console
+				error(TheTests.test_summary or string.format('Test result: %s', TheTests.test_status))
 			end
 		end
 	else

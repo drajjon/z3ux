@@ -1,9 +1,12 @@
 local deftest = require('deftest.deftest')
+local YarnBoss = require('protoedge.yarn_boss')
 
 ---@pkg TheTests
 local TheTests = {}
 local test_phase = 'start' ---@type string?
-TheTests.test_failures = false
+---@type nil|'success'|'warning'|'fail'
+TheTests.test_status = nil
+TheTests.test_summary = nil ---@type string?
 
 ---@return bool done true once tests are complete, false if you should call this again on the next update
 function TheTests.run_or_resume()
@@ -17,7 +20,7 @@ function TheTests.run_or_resume()
             -- (end test loading)
 
             test_result = deftest.run({ no_exit = true })
-            if not test_result then -- nil (or something returned from a yield)
+            if not test_result then
                 test_phase = 'run'
             end
         elseif test_phase == 'run' then
@@ -26,7 +29,15 @@ function TheTests.run_or_resume()
         if test_result then  -- 0 or 1
             test_phase = nil -- 'done'
             if test_result == 1 then
-                TheTests.test_failures = true
+                TheTests.test_status = 'fail'
+            else
+                local yarns = YarnBoss.get_active_yarns()
+                if yarns > 0 then
+                    TheTests.test_status = 'warning'
+                    TheTests.test_summary = string.format('CLEANUP: %s orphan yarn(s)', yarns)
+                else
+                    TheTests.test_status = 'success'
+                end
             end
             return true -- done
         end
