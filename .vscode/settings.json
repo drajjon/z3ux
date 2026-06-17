@@ -17,17 +17,18 @@
     "Lua.workspace.library": [
         "~\\AppData\\Roaming\\Code\\User\\globalStorage\\astronachos.defold",
         "~\\AppData\\Roaming\\Code\\User\\workspaceStorage\\274153e3e54b8783fcead9c8f4019f4a\\astronachos.defold",
-        "~\\AppData\\Roaming\\Code\\User\\workspaceStorage\\6416450b9439a418a4fbb7975a9a5bc6\\astronachos.defold"
+        "~\\AppData\\Roaming\\Code\\User\\workspaceStorage\\6416450b9439a418a4fbb7975a9a5bc6\\astronachos.defold",
+        ".defold/api"
     ],
     "glsllint.additionalStageAssociations": {
         ".fp": "frag",
         ".vp": "vert"
     },
     "files.associations": {
-        "*.project": "ini",
         "*.script": "lua",
-        "*.gui_script": "lua",
         "*.render_script": "lua",
+        "*.project": "ini",
+        "*.gui_script": "lua",
         "*.editor_script": "lua",
         "*.fp": "glsl",
         "*.vp": "glsl",
@@ -61,6 +62,21 @@
         "*.manifest": "textproto",
         "*.appmanifest": "yaml",
         "*.script_api": "yaml",
-        "ext.manifest": "yaml"
-    }
+        "ext.manifest": "yaml",
+        "*.lua_": "lua"
+    },
+    "Lua.workspace.ignoreDir": [
+        ".vscode",
+        ".defold/api",
+        "build"
+    ],
+    "Lua.diagnostics.globals": [
+        "init",
+        "final",
+        "update",
+        "fixed_update",
+        "on_message",
+        "on_input",
+        "on_reload"
+    ]
 }

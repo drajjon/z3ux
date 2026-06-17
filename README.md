@@ -4,8 +4,10 @@ See project Wiki: https://github.com/drajjon/z3ux/wiki
 
 Z3UX is published under a ["CC BY-NC 4.0"](https://creativecommons.org/licenses/by-nc/4.0/) license by Alexis Janson (aka "drajjon") - see [LICENSE.md](LICENSE.md) for details.
 
+Organized C64-PETSCII and JPETSCII tilesets pulled from playscii - https://heptapod.host/jp-lebreton/playscii
+
+
 ## CURRENT TODO [probably out of date!]
-- yarn:die()
 - "console" output text (unit test status, "undead yarns")
 
 
