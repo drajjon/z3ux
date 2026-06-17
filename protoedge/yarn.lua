@@ -32,7 +32,6 @@ end
 ---@return bool? done Returns true if Yarn is completely idle
 function Yarn:run_tick()
     local coro = self._coro
-    local cycler = self._cycler
     local params ---@type EventParams?
 
     -- Process event?
@@ -43,13 +42,14 @@ function Yarn:run_tick()
         if type(fn) == 'function' then
             coro = coroutine.create(fn)
             self._coro = coro
-            cycler = 0 -- Events happen immediately
+            self._cycler = 0 -- Events happen immediately
             params = self._next_params or EMPTY_PARAMS
         end
         self._next_params = nil
     end
 
     -- Delays
+    local cycler = self._cycler
     if cycler > 0 then
         self._cycler = cycler - 1
         return
@@ -80,7 +80,7 @@ function Yarn:idle(ticks)
         error('bad usage of idle') -- TODO: optionally non-fatal errors
         return
     end
-    if ticks then
+    if ticks then -- TODO: if ticks is [0.0,1.0) don't yield?
         self._cycler = self._cycler + ticks - 1
     end
     coroutine.yield()

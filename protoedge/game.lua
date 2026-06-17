@@ -90,10 +90,8 @@ local function the_game()
     local EMPTY_CELL = { tile = 0, fg = 0, bg = 0 } -- TODO: Move somewhere useful
     ---@type Cell[]
     local CURSOR_CELLS = {
-        { tile = 100, fg = 4, bg = 0 },
-        { tile = 102, fg = 5, bg = 0 },
-        { tile = 134, fg = 4, bg = 0 },
-        { tile = 132, fg = 5, bg = 0 },
+        { tile = 253, fg = 5, bg = 23 },
+        { tile = 253, fg = 4, bg = 23 },
     }
     local cursor_frame = 1
     ---@param self Yarn

@@ -49,7 +49,7 @@ return function()
             assert.equal(2, b)
         end)
 
-        test('basic messaging', function()
+        test('basic events', function()
             local a, b = 0, 0
             local hello ---@type string?
             local yarn_a = YarnBoss.new_yarn {
@@ -95,6 +95,39 @@ return function()
             coroutine.yield()
             assert.equal(2, a)
             assert.equal('xyz', hello)
+        end)
+
+        test('event interrupts idle', function()
+            local a = 0
+            local hello ---@type string?
+            local yarn_a = YarnBoss.new_yarn {
+                start = function(self)
+                    repeat
+                        a = a + 1
+                        self:idle(10)
+                    until false
+                end,
+                hello = function(self)
+                    hello = 'pre'
+                    self:idle() -- just 1 cycle
+                    hello = 'post'
+                end
+            }
+            -- Verify pre-event state
+            coroutine.yield()
+            assert.equal(1, a)
+            coroutine.yield()
+            coroutine.yield()
+            assert.equal(1, a)
+            -- Event sends
+            YarnBoss.send('hello')
+            assert.is_nil(hello)
+            coroutine.yield()
+            assert.equal(1, a)
+            assert.equal('pre', hello)
+            coroutine.yield()
+            assert.equal(1, a)
+            assert.equal('post', hello)
         end)
     end) -- Yarn and YarnBoss
 end
