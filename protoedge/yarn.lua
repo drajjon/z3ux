@@ -5,6 +5,7 @@
 
 ---@class Yarn
 ---@field id integer Unique ID per Yarn [READONLY]
+---@field is_dead bool? [READONLY]
 ---@field _next string? Queue of 1 event - FUTURE: more events?
 ---@field _next_params EventParams? Params for 1 event
 ---@field _coro thread?
@@ -86,10 +87,15 @@ function Yarn:idle(ticks)
     coroutine.yield()
 end
 
--- Safety default implementation, does nothing
--- TODO: this should be optional
 ---@async
-function Yarn:start()
+function Yarn:die()
+    self.is_dead = true
+    local coro = self._coro
+    local status = coro and coroutine.status(coro)
+    assert(status ~= 'normal', 'Undefined behavior: Yarn is running but not active') -- E.g. Yarn resumes another Yarn
+    if status == 'running' then
+        coroutine.yield() -- end cycle immediately
+    end
 end
 
 ---@param event string

@@ -16,18 +16,22 @@ end
 return function()
     context('InputBoss', function()
         local in_move_results = {}
+        local move_yarn ---@type Yarn?
 
         before(function()
             in_move_results = {}
-            YarnBoss.new_yarn {
+            move_yarn = YarnBoss.new_yarn{
                 in_move = function(self, params)
                     table.insert(in_move_results, params)
-                end
+                end,
             }
         end)
 
         after(function()
-            -- TODO: clear test-yarns after every test / suite
+            if move_yarn then
+                move_yarn:die()
+                move_yarn = nil
+            end
         end)
 
         test('basic gamepad', function()

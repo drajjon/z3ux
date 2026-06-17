@@ -17,16 +17,18 @@ function YarnBoss.get_active_yarns()
     return #_yarns
 end
 
--- TEMPORARY: We want a way for "done" yarns to clean out, but we haven't decided on the ideal method for that yet.
-local DROP_YARNS = false
+---@return PairIter<integer,Yarn>,any,any
+function YarnBoss.iter_active_yarns()
+    return ipairs(_yarns)
+end
 
 function YarnBoss.tick()
     local max_i = #_yarns
     local drop_i = 1
     for i = 1, max_i do
         local yarn = _yarns[i]
-        local done = yarn:run_tick() and DROP_YARNS
-        if not done then
+        yarn:run_tick()
+        if not yarn.is_dead then
             _yarns[drop_i] = yarn
             drop_i = drop_i + 1
         end

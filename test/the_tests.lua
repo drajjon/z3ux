@@ -26,11 +26,13 @@ function TheTests.run_or_resume()
         elseif test_phase == 'run' then
             test_result = deftest.resume()
         end
-        if test_result then  -- 0 or 1
+        if test_result then -- 0 or 1
             test_phase = nil -- 'done'
             if test_result == 1 then
                 TheTests.test_status = 'fail'
             else
+                -- TODO: is this good pattern / can we remove it?
+                YarnBoss.tick() -- one cycle to clean out dead
                 local yarns = YarnBoss.get_active_yarns()
                 if yarns > 0 then
                     TheTests.test_status = 'warning'

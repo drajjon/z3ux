@@ -13,27 +13,29 @@ return function()
         end)
 
         after(function()
-            -- TODO: test for yarns clearing out of pool
-            -- TODO: clear test-yarns after every test / suite
+            -- clear test-yarns after every test / suite
+            for _, yarn in YarnBoss.iter_active_yarns() do
+                yarn:die()
+            end
         end)
 
         test('basic threading', function()
             local a, b = 0, 0
-            local yarn_a = YarnBoss.new_yarn { start = function(self)
+            local yarn_a = YarnBoss.new_yarn{ start = function(self)
                 a = a + 1
                 self:idle()
                 a = a + 1
                 self:idle()
                 a = a + 1
             end }
-            local yarn_b = YarnBoss.new_yarn { start = function(self)
+            local yarn_b = YarnBoss.new_yarn{ start = function(self)
                 b = b + 1
                 self:idle(2)
                 b = b + 1
             end }
             assert.equal(0, a) -- Not started yet!
             assert.equal(0, b)
-            coroutine.yield()  -- This finishes out the current fixed_update cycle and then reenters the test
+            coroutine.yield() -- This finishes out the current fixed_update cycle and then reenters the test
             assert.equal(1, a)
             assert.equal(1, b)
             coroutine.yield()
@@ -52,7 +54,7 @@ return function()
         test('basic events', function()
             local a, b = 0, 0
             local hello ---@type string?
-            local yarn_a = YarnBoss.new_yarn {
+            local yarn_a = YarnBoss.new_yarn{
                 start = function(self)
                     repeat
                         a = a + 1
@@ -61,15 +63,15 @@ return function()
                 end,
                 hello = function(self, params)
                     hello = params.abc
-                end
+                end,
             }
-            local yarn_b = YarnBoss.new_yarn {
+            local yarn_b = YarnBoss.new_yarn{
                 start = function(self)
                     repeat
                         b = b + 1
                         self:idle()
                     until false
-                end
+                end,
             }
             -- Verify pre-event state
             coroutine.yield()
@@ -100,7 +102,7 @@ return function()
         test('event interrupts idle', function()
             local a = 0
             local hello ---@type string?
-            local yarn_a = YarnBoss.new_yarn {
+            local yarn_a = YarnBoss.new_yarn{
                 start = function(self)
                     repeat
                         a = a + 1
@@ -111,7 +113,7 @@ return function()
                     hello = 'pre'
                     self:idle() -- just 1 cycle
                     hello = 'post'
-                end
+                end,
             }
             -- Verify pre-event state
             coroutine.yield()

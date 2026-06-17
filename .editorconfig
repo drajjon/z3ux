@@ -1,0 +1,22 @@
+
+# see https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/docs/format_config_EN.md
+# and https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/lua.template.editorconfig
+
+[*.lua]
+indent_style = space
+indent_size = 4
+quote_style = single
+continuation_indent = 4
+max_line_length = 999
+end_of_line = auto
+trailing_table_separator = smart
+insert_final_newline = true
+space_around_table_field_list = true
+space_before_function_call_single_arg = only_string
+space_around_table_append_operator = false
+align_call_args = false
+align_function_params = true
+align_continuous_assign_statement = false
+align_continuous_inline_comment = false
+align_continuous_rect_table_field = false
+never_indent_comment_on_if_branch = true

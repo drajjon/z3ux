@@ -56,6 +56,9 @@ local BASE_FACTORY = msg.url('main', '/stuff', 'basefactory')
 ---@alias tile integer 0 is "nothing", 1+ for accessing tileset
 ---@alias color integer 0 is "transparent", 1+ for accessing palette
 ---@alias goid hash
+---One- and two-var iterators
+---@alias ElemIter<T> fun(...):T?
+---@alias PairIter<K, V> fun(...):K?, V?
 
 --
 -- (end section)
@@ -180,12 +183,12 @@ function Layer:_do_update()
         local i_tile = tile[i]
         if i_tile and i_tile > 0 then
             local cursor = (i_tile - Tilette.MIN) / (Tilette.MAX - Tilette.MIN)
-            go.set(spr_url, "cursor", cursor)
-            go.set(spr_url, "col0", Palette[bg[i]] or Palette.Transparent)
-            go.set(spr_url, "col1", Palette[fg[i]] or Palette.Transparent)
+            go.set(spr_url, 'cursor', cursor)
+            go.set(spr_url, 'col0', Palette[bg[i]] or Palette.Transparent)
+            go.set(spr_url, 'col1', Palette[fg[i]] or Palette.Transparent)
         else -- no tile, hide sprite
-            go.set(spr_url, "col0", Palette.Transparent)
-            go.set(spr_url, "col1", Palette.Transparent)
+            go.set(spr_url, 'col0', Palette.Transparent)
+            go.set(spr_url, 'col1', Palette.Transparent)
         end
     end
 end
