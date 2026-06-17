@@ -22,6 +22,7 @@ possible yarn event behaviors [depending on need]
 - queueing / stacking / dropping
 
 Should new_Yarn own adding itself to YarnBoss?
+Is YarnBoss really YarnClass?
 do we want to track "idle" threads in a separate pool? (feels FUTURE to me)
 
 ## FUTURE TODO

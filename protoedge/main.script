@@ -48,7 +48,7 @@ function fixed_update(self) -- 60 FPS
 end
 
 -- Handle other Defold incoming APIs e.g. input
-local InputBoss = require('protoedge.input_boss')
+local InputBoss = require('input.input_boss')
 
 ---@param action_id hash
 ---@param action on_input.action

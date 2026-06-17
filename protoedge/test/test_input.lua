@@ -4,7 +4,7 @@
 --
 -----------------------------------------------------------------------------------------
 
-local InputBoss = require('protoedge.input_boss')
+local InputBoss = require('input.input_boss')
 local YarnBoss = require('protoedge.yarn_boss')
 local assert = require('test.assert')
 
