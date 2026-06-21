@@ -3,7 +3,7 @@
 -- Tests: InputBoss
 --
 -----------------------------------------------------------------------------------------
-
+local SmoothInput = require('input.smooth_input')
 local InputBoss = require('input.input_boss')
 local YarnBoss = require('protoedge.yarn_boss')
 local assert = require('test.assert')
@@ -17,8 +17,10 @@ return function()
     context('InputBoss', function()
         local in_move_results = {}
         local move_yarn ---@type Yarn?
+        local input_handler ---@type IInputHandler?
 
         before(function()
+            input_handler = SmoothInput.new()
             in_move_results = {}
             move_yarn = YarnBoss.new_yarn{
                 in_move = function(self, params)
@@ -28,13 +30,17 @@ return function()
         end)
 
         after(function()
+            if input_handler then
+                InputBoss.unregister_handler(input_handler)
+                input_handler = nil
+            end
             if move_yarn then
                 move_yarn:die()
                 move_yarn = nil
             end
         end)
 
-        test('basic gamepad', function()
+        print('basic gamepad', function()
             fake_dir('left')
             assert.same(in_move_results, {})
             coroutine.yield()

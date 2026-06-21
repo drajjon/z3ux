@@ -5,11 +5,15 @@
 local Screen = require('protoedge.screen')
 local LayerBoss = require('protoedge.layer_boss')
 local YarnBoss = require('protoedge.yarn_boss')
+local SmoothInput = require('input.smooth_input')
 
 local function the_game()
+    -- Set up input handling
+    local input = SmoothInput.new()
+
     -- Scrolling background
-    local bg_layer = LayerBoss.new_layer { width = Screen.COLS + 1 }
-    local bg_yarn = YarnBoss.new_yarn {
+    local bg_layer = LayerBoss.new_layer{ width = Screen.COLS + 1 }
+    local bg_yarn = YarnBoss.new_yarn{
         start = function(self)
             local t = 0
             repeat
@@ -26,7 +30,7 @@ local function the_game()
                     self:idle(4)
                 end
             until false
-        end
+        end,
     }
 
     -- Bouncing balls
@@ -42,7 +46,7 @@ local function the_game()
         local y = math.random(2, y_max - 1)
         x_d[i] = ((math.random(1, 2) - 1) * 2 - 1) * 0.25
         y_d[i] = ((math.random(1, 2) - 1) * 2 - 1) * 0.25
-        fg_layer[i] = LayerBoss.new_layer { width = SPR_SIZE, height = SPR_SIZE, x_col = x, y_row = y }
+        fg_layer[i] = LayerBoss.new_layer{ width = SPR_SIZE, height = SPR_SIZE, x_col = x, y_row = y }
         local color = math.random(5, 25)
         -- fg_layer[i]:rect({ x = 1, y = 1, w = SPR_SIZE, h = SPR_SIZE }, { tile = 162, fg = color })
         fg_layer[i]:poke(1, 1, 145, color)
@@ -51,7 +55,7 @@ local function the_game()
         fg_layer[i]:poke(2, 2, 179, color)
     end
 
-    local fg_yarn = YarnBoss.new_yarn {
+    local fg_yarn = YarnBoss.new_yarn{
         start = function(self)
             repeat
                 for i = 1, NUM_SPR do
@@ -67,7 +71,7 @@ local function the_game()
                 end
                 self:idle()
             until false
-        end
+        end,
     }
 
     -- Box window
@@ -80,7 +84,7 @@ local function the_game()
     -- TODO: extract helper for Rect->Opts copying (note the param difference could help enforce patterns- x and x_col are not the same!)
     local view_width = window.w - 2
     local view_height = window.h - 2
-    local cursor_layer = LayerBoss.new_layer { x_col = window.x + 1, y_row = window.y + 1, width = view_width, height = view_height }
+    local cursor_layer = LayerBoss.new_layer{ x_col = window.x + 1, y_row = window.y + 1, width = view_width, height = view_height }
     local cursor_x, cursor_y = 1, 1
     ---@param cell Cell
     local function draw_cursor(cell)
@@ -106,7 +110,7 @@ local function the_game()
             self:idle(15)
         until false
     end
-    local cursor_yarn = YarnBoss.new_yarn {
+    local cursor_yarn = YarnBoss.new_yarn{
         start = function(self)
             run_cursor(self)
         end,
@@ -119,7 +123,7 @@ local function the_game()
             while cursor_y < 1 do cursor_y = cursor_y + view_height end
             while cursor_y > view_height do cursor_y = cursor_y - view_height end
             run_cursor(self)
-        end
+        end,
     }
 end
 
