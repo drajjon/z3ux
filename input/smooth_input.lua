@@ -35,15 +35,15 @@ local RIGHT = hash('right')
 local UP = hash('up')
 local DOWN = hash('down')
 
-local DIST = 0.25
+local SPEED = 0.25
 
 local DELTA_X = {
-    [LEFT] = -DIST,
-    [RIGHT] = DIST,
+    [LEFT] = -1,
+    [RIGHT] = 1,
 }
 local DELTA_Y = {
-    [UP] = -DIST,
-    [DOWN] = DIST,
+    [UP] = -1,
+    [DOWN] = 1,
 }
 
 -- local pressed_this_frame = {} ---@type table<hash,number>
@@ -74,9 +74,10 @@ function SmoothInput:tick()
         dy = DELTA_Y[action_id] and DELTA_Y[action_id] * magnitude or dy
     end
     if dx or dy then
+        local vec = vmath.normalize(vmath.vector3(dx or 0, dy or 0, 0)) * SPEED
         -- FUTURE: (digital) cyclic movement, stagger diagonals
-        -- FUTURE: (analog) normalized diagonals, momentum/smoothing
-        YarnBoss.send('in_move', { dx = dx or 0, dy = dy or 0 })
+        -- FUTURE: (analog) applying original magnitude, momentum/smoothing
+        YarnBoss.send('in_move', { dx = vec.x, dy = vec.y, v = vec })
     end
 end
 
