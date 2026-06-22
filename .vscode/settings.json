@@ -19,7 +19,9 @@
         "~\\AppData\\Roaming\\Code\\User\\workspaceStorage\\274153e3e54b8783fcead9c8f4019f4a\\astronachos.defold",
         "~\\AppData\\Roaming\\Code\\User\\workspaceStorage\\6416450b9439a418a4fbb7975a9a5bc6\\astronachos.defold",
         ".defold/api",
-        ".defold/assets"
+        ".defold/assets",
+        "~/.config/Code/User/globalStorage/astronachos.defold",
+        "~/.config/Code/User/workspaceStorage/f8ea2047783332736084b5f4db194ce0/astronachos.defold"
     ],
     "glsllint.additionalStageAssociations": {
         ".fp": "frag",
