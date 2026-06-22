@@ -28,24 +28,22 @@ end
 -- Class methods
 -----------------------------------------------------------------------------------------
 
-local ANALOG_THRESHOLD = 0.75 -- Note that e.g. even with stick fully left/right you'll get a small amount up/down
+local ANALOG_THRESHOLD = 0.1 -- Note that e.g. even with stick fully left/right you'll get a small amount up/down
 
 local LEFT = hash('left')
 local RIGHT = hash('right')
 local UP = hash('up')
 local DOWN = hash('down')
 
+local DIST = 0.25
+
 local DELTA_X = {
-    [LEFT] = -1,
-    [RIGHT] = 1,
-    [UP] = 0,
-    [DOWN] = 0,
+    [LEFT] = -DIST,
+    [RIGHT] = DIST,
 }
 local DELTA_Y = {
-    [LEFT] = 0,
-    [RIGHT] = 0,
-    [UP] = -1,
-    [DOWN] = 1,
+    [UP] = -DIST,
+    [DOWN] = DIST,
 }
 
 -- local pressed_this_frame = {} ---@type table<hash,number>
@@ -56,6 +54,7 @@ local held_this_frame = {} ---@type table<hash,number>
 function SmoothInput:on_input(action_id, action)
     if type(action.value) ~= 'number' then
         pprint('wtf - ', action)
+        error('wtf')
         return
     end
 
@@ -63,17 +62,22 @@ function SmoothInput:on_input(action_id, action)
         held_this_frame[action_id] = nil
     elseif action.value > ANALOG_THRESHOLD then
         held_this_frame[action_id] = math.max(action.value, held_this_frame[action_id] or 0)
+    else
+        held_this_frame[action_id] = nil
     end
 end
 
 function SmoothInput:tick()
-    local dx, dy = 0, 0
+    local dx, dy ---@type number?, number?
     for action_id, magnitude in pairs(held_this_frame) do
-        dx = dx == 0 and DELTA_X[action_id] or dx
-        dy = dy == 0 and DELTA_Y[action_id] or dy
+        dx = DELTA_X[action_id] and DELTA_X[action_id] * magnitude or dx
+        dy = DELTA_Y[action_id] and DELTA_Y[action_id] * magnitude or dy
     end
-    -- FUTURE: stagger diagonals, analog support, normalized diagonals
-    YarnBoss.send('in_move', { dx = dx, dy = dy })
+    if dx or dy then
+        -- FUTURE: (digital) cyclic movement, stagger diagonals
+        -- FUTURE: (analog) normalized diagonals, momentum/smoothing
+        YarnBoss.send('in_move', { dx = dx or 0, dy = dy or 0 })
+    end
 end
 
 -- FUTURE: in_button, in_key, in_mouse

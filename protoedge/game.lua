@@ -47,7 +47,7 @@ local function the_game()
         x_d[i] = ((math.random(1, 2) - 1) * 2 - 1) * 0.25
         y_d[i] = ((math.random(1, 2) - 1) * 2 - 1) * 0.25
         fg_layer[i] = LayerBoss.new_layer{ width = SPR_SIZE, height = SPR_SIZE, x_col = x, y_row = y }
-        local color = math.random(5, 25)
+        local color = i * 4 + 3
         -- fg_layer[i]:rect({ x = 1, y = 1, w = SPR_SIZE, h = SPR_SIZE }, { tile = 162, fg = color })
         fg_layer[i]:poke(1, 1, 145, color)
         fg_layer[i]:poke(2, 1, 147, color)
@@ -77,25 +77,27 @@ local function the_game()
     -- Box window
     local window = { x = 2, y = 2, w = Screen.COLS - 2, h = Screen.ROWS - 2 }
     local box_layer = LayerBoss.new_layer()
-    box_layer:rect(window, { tile = 254, bg = 2 })
-    box_layer:rect(window, { tile = 256, fg = 12 }, true)
+    box_layer:rect(window, { tile = 167, bg = 2 })
+    box_layer:rect(window, { tile = 256, fg = 3 }, true)
 
     -- Cursor layer
     -- TODO: extract helper for Rect->Opts copying (note the param difference could help enforce patterns- x and x_col are not the same!)
     local view_width = window.w - 2
     local view_height = window.h - 2
-    local cursor_layer = LayerBoss.new_layer{ x_col = window.x + 1, y_row = window.y + 1, width = view_width, height = view_height }
+    local cursor_layer = LayerBoss.new_layer{ x_col = window.x + 1, y_row = window.y + 1, width = 1, height = 1 }
     local cursor_x, cursor_y = 1, 1
     ---@param cell Cell
     local function draw_cursor(cell)
-        cursor_layer:cell(cursor_x, cursor_y, cell)
+        cursor_layer:cell(1, 1, cell)
+        cursor_layer.x_col = window.x + cursor_x
+        cursor_layer.y_row = window.y + cursor_y
     end
     ---@type Cell
     local EMPTY_CELL = { tile = 0, fg = 0, bg = 0 } -- TODO: Move somewhere useful
     ---@type Cell[]
     local CURSOR_CELLS = {
-        { tile = 253, fg = 5, bg = 23 },
-        { tile = 253, fg = 4, bg = 23 },
+        { tile = 253, fg = 12, bg = 23 },
+        --{ tile = 253, fg = 4, bg = 23 },
     }
     local cursor_frame = 1
     ---@param self Yarn
