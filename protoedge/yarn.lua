@@ -1,6 +1,6 @@
 ---@class YarnProto
 ---@field start fun(self:Yarn)? Automatic entrypoint for when Yarn starts
----@field in_move fun(self:Yarn, params:{dx:integer,dy:integer})? Event: Player arrow/gamepad input, single event per tick with deltax/y [-1,1]
+---@field in_move fun(self:Yarn, params:{dx:integer,dy:integer,v:vector3})? Event: Player arrow/gamepad input, single event per tick with deltax/y [-1,1]
 ---@field [string] fun(self:Yarn, params:EventParams)? Other event handlers, parameters vary by event
 
 ---@class Yarn

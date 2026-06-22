@@ -8,9 +8,21 @@ local InputBoss = require('input.input_boss')
 local YarnBoss = require('protoedge.yarn_boss')
 local assert = require('test.assert')
 
----@param dir 'left'|'right'|'up'|'down'
-local function fake_dir(dir)
-    InputBoss.on_input(hash(dir), { pressed = true, value = 1.0 })
+---@param dir direction
+---@param magnitude number?
+local function press_dir(dir, magnitude)
+    InputBoss.on_input(hash(dir), { pressed = true, value = magnitude or 1.0 })
+end
+
+---@param dir direction
+---@param magnitude number?
+local function hold_dir(dir, magnitude)
+    InputBoss.on_input(hash(dir), { value = magnitude or 1.0 })
+end
+
+---@param dir direction
+local function release_dir(dir)
+    InputBoss.on_input(hash(dir), { released = true, value = 0 })
 end
 
 return function()
@@ -40,35 +52,46 @@ return function()
             end
         end)
 
-        print('basic gamepad', function()
-            fake_dir('left')
+        test('basic gamepad', function()
+            press_dir('left')
             assert.same(in_move_results, {})
             coroutine.yield()
-            assert.same(in_move_results, { { dx = -1, dy = 0 } })
+            local SPEED = 0.25
+            local LEFT = { dx = -SPEED, dy = 0, v = vmath.vector3(-SPEED,0,0) }
+            assert.same(in_move_results, { LEFT })
+            coroutine.yield()
+            assert.same(in_move_results, { LEFT, LEFT })
+            hold_dir('left')
+            coroutine.yield()
+            assert.same(in_move_results, { LEFT, LEFT,LEFT })
+            release_dir('left')
+            coroutine.yield()
+            assert.same(in_move_results, { LEFT, LEFT, LEFT })
 
             -- Only one move "per frame"
             in_move_results = {}
-            fake_dir('up')
-            fake_dir('up')
+            press_dir('up')
+            press_dir('up')
+            hold_dir('up')
             assert.same(in_move_results, {})
             coroutine.yield()
-            coroutine.yield() -- ...and they don't queue
-            assert.same(in_move_results, { { dx = 0, dy = -1 } })
+            local UP = { dx = 0, dy = -SPEED, v = vmath.vector3(0,-SPEED,0) }
+            assert.same(in_move_results, { UP })
         end)
 
         -- TODO: Diagonal support
         -- TODO: need to clear out yarns :)
         print('diagonal gamepad', function()
-            fake_dir('down')
-            fake_dir('right')
+            press_dir('down')
+            press_dir('right')
             assert.same(in_move_results, {})
             coroutine.yield()
             assert.same(in_move_results, { { dx = 1, dy = 1 } })
         end)
 
         print('conflicting gamepad', function()
-            fake_dir('down')
-            fake_dir('up')
+            press_dir('down')
+            press_dir('up')
             assert.same(in_move_results, {})
             coroutine.yield()
             -- TBH don't care which `dy` is, as long as it's either +1 or -1

@@ -1,7 +1,6 @@
 -----------------------------------------------------------------------------------------
 -- Converts raw input from Defold engine into discrete events
 -----------------------------------------------------------------------------------------
-local YarnBoss = require('protoedge.yarn_boss')
 
 ---@class IInputHandler
 ---@field on_input function
